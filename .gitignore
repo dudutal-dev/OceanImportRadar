@@ -1,0 +1,16 @@
+# פלט מקומי של הסקריפט — נתונים תפעוליים, לא נכנסים לרפו
+radar_feed.json
+history.json
+sailings.csv
+run.log
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# מערכת
+.DS_Store
+Thumbs.db

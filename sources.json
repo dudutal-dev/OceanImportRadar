@@ -1,0 +1,63 @@
+{
+  "_comment": "כל מקור נסרק, הטבלאות שבו מזוהות אוטומטית, והעמודות ממופות לפי מילות מפתח. הרץ --inspect <name> כדי לראות מה נמצא בעמוד לפני שמפעילים אותו.",
+  "output": {
+    "feed": "radar_feed.json",
+    "csv": "sailings.csv",
+    "history": "history.json"
+  },
+  "defaults": {
+    "timeout": 25,
+    "retries": 2,
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+    "polite_delay_sec": 3
+  },
+  "sources": [
+    {
+      "name": "ashdod_expected",
+      "label": "נמל אשדוד — אוניות צפויות",
+      "url": "https://www.ashdodport.co.il/pages/apc-port_shipexpected.aspx",
+      "enabled": true,
+      "render": false,
+      "default_pod": "אשדוד",
+      "notes": "עמוד ASP.NET. אם הטבלה נטענת ב-JS, הפעל render=true (דורש playwright)."
+    },
+    {
+      "name": "hct_south",
+      "label": "נמל הדרום (HCT) — סטטוס אניות",
+      "url": "https://hadct.co.il/",
+      "enabled": false,
+      "render": true,
+      "default_pod": "נמל הדרום",
+      "notes": "צריך לאתר את כתובת עמוד «כלי שיט» המדויקת ולעדכן כאן. הרץ --inspect hct_south."
+    },
+    {
+      "name": "israports_ships",
+      "label": "חברת נמלי ישראל — טבלת אניות (S14)",
+      "url": "https://israports.co.il/he/TaskYam/Pages/CommunalTables/Ships.aspx",
+      "enabled": true,
+      "render": false,
+      "default_pod": "",
+      "notes": "טבלה קהילתית של תס\"ק-ים. עמודת הנמל בדרך כלל קיימת בטבלה עצמה."
+    },
+    {
+      "name": "haifa_port",
+      "label": "נמל חיפה — שער לקוחות",
+      "url": "https://www.haifaport.co.il/",
+      "enabled": false,
+      "render": true,
+      "default_pod": "חיפה",
+      "notes": "מצא את עמוד תוכנית העבודה / אניות צפויות ועדכן את ה-URL."
+    }
+  ],
+  "column_keywords": {
+    "vessel": ["vessel", "ship", "vessel name", "אנייה", "אניה", "אונייה", "אוניה", "שם אנייה", "שם האנייה", "שם אוניה", "כלי שיט"],
+    "carrier": ["carrier", "line", "operator", "ספן", "חברת ספנות", "קו ספנות", "מפעיל", "סוכן", "סוכן אניות"],
+    "service": ["service", "loop", "string", "שירות", "קו"],
+    "voyage": ["voyage", "voy", "voy no", "הפלגה", "מספר הפלגה", "מס הפלגה", "מס' הפלגה", "מסע"],
+    "pol": ["pol", "origin", "from", "last port", "נמל מוצא", "מוצא", "מנמל", "נמל קודם", "מוצא אחרון"],
+    "pod": ["pod", "destination", "port", "נמל", "נמל יעד", "יעד", "לנמל", "מסוף", "טרמינל"],
+    "eta": ["eta", "arrival", "expected arrival", "מועד הגעה", "הגעה צפויה", "תאריך הגעה", "צפי הגעה", "eta מוצהר"],
+    "ata": ["ata", "atb", "actual arrival", "berthed", "הגעה בפועל", "עגינה", "מועד עגינה", "קשירה"],
+    "etd": ["etd", "departure", "הפלגה צפויה", "מועד יציאה", "יציאה"]
+  }
+}

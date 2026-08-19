@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#04070F">
+<title>רדאר יבוא ימי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@200;300;400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* surfaces */
+  --void:#04070F;
+  --surface:#0A0F1D;
+  --surface-2:#101728;
+  --surface-3:#162034;
+  --line:rgba(125,160,215,.15);
+  --line-2:rgba(125,160,215,.30);
+  /* type */
+  --ink:#EAF0FA;
+  --ink-2:#9AAAC6;
+  --ink-3:#6B7C99;
+  /* signal */
+  --signal:#FF2E93;
+  --phos:#31E9C4;
+  --amber:#FFB454;
+  /* type stacks */
+  --sans:"Heebo","Segoe UI",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  /* rhythm */
+  --r:4px;
+  --rail:88px;
+  --t:180ms cubic-bezier(.2,.7,.3,1);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--void)}
+body{
+  font-family:var(--sans);color:var(--ink);font-size:15px;line-height:1.55;
+  -webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;
+  min-height:100vh;overflow-x:hidden;
+}
+/* ambient horizon */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(900px 520px at 78% -8%, rgba(255,46,147,.10), transparent 62%),
+    radial-gradient(760px 480px at 8% 108%, rgba(49,233,196,.075), transparent 60%);
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:72px 72px;
+  -webkit-mask-image:radial-gradient(circle at 50% 22%,#000,transparent 78%);
+          mask-image:radial-gradient(circle at 50% 22%,#000,transparent 78%);
+  opacity:.28;
+}
+.shell{position:relative;z-index:1}
+
+/* ============ top bar ============ */
+header.top{
+  position:sticky;top:0;z-index:20;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  background:linear-gradient(180deg,rgba(4,7,15,.94),rgba(4,7,15,.72));
+  border-bottom:1px solid var(--line);
+}
+.top-in{
+  max-width:1240px;margin:0 auto;padding:12px 20px;
+  display:flex;align-items:center;gap:16px;justify-content:space-between;
+}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.mark{width:30px;height:30px;flex:none;color:var(--signal)}
+.brand h1{
+  margin:0;font-size:19px;font-weight:300;letter-spacing:-.3px;white-space:nowrap;
+}
+.brand h1 b{font-weight:700}
+.stat{display:flex;align-items:center;gap:14px;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.stat .dot{width:6px;height:6px;border-radius:50%;background:var(--phos);box-shadow:0 0 8px var(--phos);display:inline-block;margin-left:6px}
+.stat span{white-space:nowrap}
+
+/* ============ layout ============ */
+.body-grid{max-width:1240px;margin:0 auto;display:flex;gap:0}
+nav.rail{
+  position:sticky;top:56px;align-self:flex-start;
+  width:var(--rail);flex:none;padding:18px 8px;
+  height:calc(100vh - 56px);
+  border-left:1px solid var(--line);
+  display:flex;flex-direction:column;gap:3px;
+}
+nav.rail button{
+  all:unset;box-sizing:border-box;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:11px 4px;border-radius:var(--r);cursor:pointer;
+  color:var(--ink-3);font-size:10.5px;text-align:center;line-height:1.2;
+  transition:color var(--t),background var(--t);min-height:56px;
+  touch-action:manipulation;
+}
+nav.rail button svg{width:21px;height:21px;stroke-width:1.5}
+nav.rail button:hover{color:var(--ink-2);background:rgba(255,255,255,.03)}
+nav.rail button[aria-selected="true"]{color:var(--ink);background:rgba(255,46,147,.10);box-shadow:inset 0 0 0 1px rgba(255,46,147,.30)}
+nav.rail button[aria-selected="true"] svg{color:var(--signal);filter:drop-shadow(0 0 6px rgba(255,46,147,.6))}
+nav.rail button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+
+main{flex:1;min-width:0;padding:22px 20px 80px}
+section.panel{display:none;animation:rise .22s cubic-bezier(.2,.7,.3,1)}
+section.panel.on{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+h2{font-size:20px;font-weight:300;margin:0;letter-spacing:-.3px}
+h3{font-size:12px;font-weight:500;margin:0 0 12px;font-family:var(--mono);color:var(--ink-3);text-transform:uppercase;letter-spacing:1.4px}
+.hint{font-size:12.5px;color:var(--ink-3);line-height:1.65}
+
+/* ============ panel surface + HUD brackets ============ */
+.card{
+  position:relative;background:linear-gradient(160deg,var(--surface-2),var(--surface));
+  border:1px solid var(--line);border-radius:var(--r);padding:16px;
+}
+.card::before,.card::after{
+  content:"";position:absolute;width:12px;height:12px;pointer-events:none;
+  border-color:var(--line-2);border-style:solid;
+}
+.card::before{top:-1px;right:-1px;border-width:1px 1px 0 0}
+.card::after{bottom:-1px;left:-1px;border-width:0 0 1px 1px}
+
+/* ============ KPI ============ */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:10px;margin-bottom:22px}
+.kpi{
+  position:relative;background:linear-gradient(160deg,var(--surface-2),var(--surface));
+  border:1px solid var(--line);border-radius:var(--r);padding:13px 15px;overflow:hidden;
+}
+.kpi::after{content:"";position:absolute;inset:auto 0 0 0;height:1px;background:linear-gradient(90deg,transparent,var(--line-2),transparent)}
+.kpi .v{font-size:32px;font-weight:200;letter-spacing:-1.2px;line-height:1.1;font-family:var(--mono)}
+.kpi .l{font-size:11px;color:var(--ink-3);margin-top:3px;line-height:1.35}
+.kpi.hot .v{color:var(--signal)}
+.kpi.good .v{color:var(--phos)}
+
+/* ============ sonar scope ============ */
+.radar-grid{display:grid;grid-template-columns:minmax(0,1fr) 328px;gap:16px;align-items:start}
+.scope-side{display:flex;flex-direction:column;gap:12px}
+.next-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.next-row:last-child{border-bottom:none}
+.next-row .n1{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.next-row .n2{font-size:11px;color:var(--ink-3);font-family:var(--mono);margin-top:2px}
+.next-row .eta{font-family:var(--mono);font-size:11.5px;text-align:left;white-space:nowrap}
+.scope-wrap{
+  position:relative;border:1px solid var(--line);border-radius:var(--r);
+  background:radial-gradient(circle at 50% 46%,var(--surface) 0%,var(--void) 76%);
+  padding:10px;overflow:hidden;
+}
+.scope-wrap::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 50% 46%,rgba(49,233,196,.07),transparent 58%);
+}
+svg.scope{display:block;width:100%;height:auto;max-height:min(58vh,500px);margin:0 auto;font-family:var(--mono)}
+.sweep{transform-origin:200px 200px;animation:spin 9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.blip{cursor:pointer}
+.blip circle.core{transition:r var(--t)}
+.blip:hover circle.core,.blip:focus circle.core{r:6}
+.blip:focus{outline:none}
+.blip:focus circle.halo{stroke:var(--ink);stroke-width:1}
+.scope-read{
+  margin-top:10px;min-height:38px;padding:9px 12px;border:1px solid var(--line);border-radius:var(--r);
+  background:var(--surface);font-family:var(--mono);font-size:12px;color:var(--ink-2);
+}
+.scope-read b{color:var(--ink);font-weight:500}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-top:12px}
+.legend i{width:8px;height:8px;border-radius:50%;display:inline-block;margin-left:6px;vertical-align:middle}
+
+/* linear strip */
+.strip-box{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);padding:8px 6px;overflow-x:auto}
+svg.strip{display:block;width:100%;height:auto;font-family:var(--mono)}
+
+/* ============ controls ============ */
+input,select,textarea,button{font-family:var(--sans);font-size:14px;color:var(--ink)}
+input[type=text],input[type=date],input[type=number],select,textarea{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:9px 11px;min-height:44px;width:100%;transition:border-color var(--t),box-shadow var(--t);
+}
+textarea{font-family:var(--mono);font-size:12.5px;line-height:1.6;min-height:150px;resize:vertical}
+input:hover,select:hover,textarea:hover{border-color:var(--line-2)}
+input:focus,select:focus,textarea:focus{
+  outline:none;border-color:var(--signal);box-shadow:0 0 0 3px rgba(255,46,147,.16)
+}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink-3) 50%),linear-gradient(135deg,var(--ink-3) 50%,transparent 50%);
+  background-position:14px calc(50% - 2px),19px calc(50% - 2px);background-size:5px 5px;background-repeat:no-repeat;padding-left:34px}
+::placeholder{color:var(--ink-3)}
+
+.btn{
+  all:unset;box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  min-height:44px;padding:0 17px;border-radius:var(--r);cursor:pointer;
+  font-size:14px;font-weight:500;background:var(--signal);color:#0A0410;
+  transition:filter var(--t),transform var(--t),box-shadow var(--t);touch-action:manipulation;
+  box-shadow:0 0 22px rgba(255,46,147,.22);
+}
+.btn:hover{filter:brightness(1.12)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-2)}
+.btn.ghost:hover{background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px var(--ink-3)}
+.btn.danger{background:transparent;color:var(--signal);box-shadow:inset 0 0 0 1px rgba(255,46,147,.45)}
+.btn.danger:hover{background:rgba(255,46,147,.10)}
+.btn.sm{min-height:36px;padding:0 12px;font-size:12.5px}
+.tools{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.tools>input,.tools>select{width:auto;min-width:150px;flex:0 1 auto}
+.tools>input[type=text]{flex:1 1 210px}
+
+/* ============ table ============ */
+.tbl-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{width:100%;border-collapse:collapse}
+th,td{padding:11px 13px;text-align:right;font-size:13.5px;border-bottom:1px solid var(--line)}
+th{
+  position:sticky;top:0;z-index:2;background:var(--surface-2);
+  font-family:var(--mono);font-size:10.5px;font-weight:500;color:var(--ink-3);
+  text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;cursor:pointer;user-select:none;
+}
+th:hover{color:var(--ink-2)}
+th.nosort{cursor:default}
+th[aria-sort]::after{content:"";display:inline-block;margin-right:5px;border:4px solid transparent}
+th[aria-sort="ascending"]::after{border-bottom-color:var(--signal);margin-bottom:4px}
+th[aria-sort="descending"]::after{border-top-color:var(--signal);margin-top:4px}
+tbody tr{transition:background var(--t)}
+tbody tr:hover{background:rgba(255,255,255,.035)}
+tbody tr:last-child td{border-bottom:none}
+td.mono,td.num{font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.vsl{font-weight:500}
+.tag{
+  display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10.5px;
+  padding:3px 8px;border-radius:20px;white-space:nowrap;letter-spacing:.4px;
+}
+.tag::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;box-shadow:0 0 6px currentColor}
+.t-ok{color:var(--phos);background:rgba(49,233,196,.10)}
+.t-late{color:var(--signal);background:rgba(255,46,147,.12)}
+.t-sail{color:var(--ink-2);background:rgba(154,170,198,.10)}
+.t-om{color:var(--amber);background:rgba(255,180,84,.13)}
+.empty{
+  padding:34px 18px;text-align:center;color:var(--ink-3);font-size:13.5px;
+  border:1px dashed var(--line-2);border-radius:var(--r);background:var(--surface)
+}
+
+/* ============ bars ============ */
+.bar-row{display:grid;grid-template-columns:118px 1fr 118px;gap:12px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.bar-row:last-child{border-bottom:none}
+.bar-row .nm{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{height:6px;border-radius:3px;background:rgba(125,160,215,.13);position:relative;overflow:hidden}
+.bar-fill{position:absolute;inset:0 auto 0 0;right:0;border-radius:3px;transition:width .5s cubic-bezier(.2,.7,.3,1)}
+.bar-fill.hi{background:linear-gradient(90deg,var(--phos),#1FB79C);box-shadow:0 0 12px rgba(49,233,196,.45)}
+.bar-fill.mid{background:linear-gradient(90deg,var(--amber),#C77F1E);box-shadow:0 0 12px rgba(255,180,84,.35)}
+.bar-fill.low{background:linear-gradient(90deg,var(--signal),#B31766);box-shadow:0 0 12px rgba(255,46,147,.4)}
+.bar-row .mt{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);text-align:left;white-space:nowrap}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+fieldset{border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:18px 0 0;background:var(--surface)}
+legend{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:1.2px;padding:0 8px}
+.frm{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:11px;margin-bottom:14px}
+label.f{display:block;font-size:11px;color:var(--ink-3);margin-bottom:5px;font-family:var(--mono);letter-spacing:.4px}
+
+/* alerts */
+.alert{
+  display:flex;gap:12px;align-items:flex-start;
+  border:1px solid var(--line);border-right:2px solid var(--signal);border-radius:var(--r);
+  background:linear-gradient(90deg,rgba(255,46,147,.07),var(--surface) 42%);
+  padding:12px 14px;margin-bottom:9px;
+}
+.alert svg{width:17px;height:17px;flex:none;color:var(--signal);margin-top:2px;stroke-width:1.6}
+.alert .a-t{font-size:13.5px;font-weight:500}
+.alert .a-d{font-size:12px;color:var(--ink-3);font-family:var(--mono);margin-top:3px;line-height:1.5}
+
+code.k{font-family:var(--mono);font-size:11.5px;background:rgba(125,160,215,.12);padding:2px 6px;border-radius:3px;color:var(--ink-2)}
+ul.src{margin:8px 0 0;padding-right:0;list-style:none}
+ul.src li{padding:7px 0;border-bottom:1px solid var(--line);font-size:13px;color:var(--ink-2)}
+ul.src li:last-child{border-bottom:none}
+ul.src b{color:var(--ink);font-weight:500}
+
+.toast{
+  position:fixed;bottom:calc(22px + env(safe-area-inset-bottom));right:50%;transform:translate(50%,10px);
+  background:var(--surface-2);border:1px solid var(--line-2);color:var(--ink);
+  padding:12px 18px;border-radius:var(--r);font-size:13.5px;z-index:60;
+  opacity:0;pointer-events:none;transition:opacity var(--t),transform var(--t);
+  box-shadow:0 12px 40px rgba(0,0,0,.6);max-width:calc(100vw - 32px);text-align:center;
+}
+.toast.on{opacity:1;transform:translate(50%,0)}
+
+.notice{
+  display:flex;gap:11px;align-items:center;flex-wrap:nowrap;justify-content:space-between;
+  border:1px solid rgba(255,180,84,.35);background:rgba(255,180,84,.07);
+  border-radius:var(--r);padding:10px 14px;margin-bottom:18px;
+  font-size:12.5px;color:var(--amber);font-family:var(--mono);line-height:1.4
+}
+.notice .btn{flex:none}
+
+/* ============ mobile ============ */
+nav.tabbar{display:none}
+.sheet-back{display:none}
+@media (max-width:900px){
+  .grid2{grid-template-columns:1fr}
+  .radar-grid{grid-template-columns:1fr}
+  .kpis .kpi:nth-child(5){grid-column:1/-1}
+  svg.scope{max-height:46vh}
+  .top-in{padding:10px 14px}
+  .brand h1{font-size:17px}
+  .stat .hide-s{display:none}
+  nav.rail{display:none}
+  main{padding:16px 14px calc(96px + env(safe-area-inset-bottom))}
+  .kpis{grid-template-columns:1fr 1fr;gap:8px}
+  .kpi .v{font-size:26px}
+  .frm{grid-template-columns:1fr 1fr}
+  .bar-row{grid-template-columns:96px 1fr 96px;gap:9px}
+  h2{font-size:18px}
+  .tools>input[type=text]{flex:1 1 100%;min-width:0}
+  .tools>select{flex:1 1 calc(50% - 5px);min-width:0}
+
+  nav.tabbar{
+    display:grid;grid-template-columns:repeat(5,1fr);
+    position:fixed;bottom:0;right:0;left:0;z-index:30;
+    background:rgba(8,12,24,.93);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+  }
+  nav.tabbar button{
+    all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:4px;
+    padding:8px 2px;color:var(--ink-3);font-size:10px;cursor:pointer;min-height:52px;
+    border-radius:var(--r);transition:color var(--t);touch-action:manipulation;
+  }
+  nav.tabbar button svg{width:21px;height:21px;stroke-width:1.5}
+  nav.tabbar button[aria-selected="true"]{color:var(--signal)}
+  nav.tabbar button[aria-selected="true"] svg{filter:drop-shadow(0 0 7px rgba(255,46,147,.65))}
+  nav.tabbar button:focus-visible{outline:2px solid var(--signal);outline-offset:-2px}
+
+  .sheet-back{
+    display:block;position:fixed;inset:0;z-index:40;background:rgba(2,4,10,.62);
+    opacity:0;pointer-events:none;transition:opacity var(--t)
+  }
+  .sheet-back.on{opacity:1;pointer-events:auto}
+  .sheet{
+    position:fixed;right:0;left:0;bottom:0;z-index:41;
+    background:var(--surface-2);border-top:1px solid var(--line-2);
+    border-radius:14px 14px 0 0;padding:10px 14px calc(20px + env(safe-area-inset-bottom));
+    transform:translateY(102%);transition:transform .24s cubic-bezier(.2,.7,.3,1)
+  }
+  .sheet.on{transform:none}
+  .sheet .grab{width:38px;height:4px;border-radius:2px;background:var(--line-2);margin:4px auto 14px}
+  .sheet button{
+    all:unset;box-sizing:border-box;display:flex;align-items:center;gap:13px;width:100%;
+    padding:14px 12px;border-radius:var(--r);cursor:pointer;font-size:15px;min-height:52px;
+  }
+  .sheet button svg{width:20px;height:20px;color:var(--ink-3);stroke-width:1.5}
+  .sheet button:active{background:rgba(255,255,255,.05)}
+  .sheet button:focus-visible{outline:2px solid var(--signal);outline-offset:-2px}
+}
+/* sailings table → cards on phone */
+@media (max-width:700px){
+  .frm{grid-template-columns:1fr}
+  .tbl-scroll#sailScroll{border:none;background:transparent;overflow:visible}
+  #tSail thead{display:none}
+  #tSail,#tSail tbody,#tSail tr,#tSail td{display:block;width:100%}
+  #tSail tr{
+    background:linear-gradient(160deg,var(--surface-2),var(--surface));
+    border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px;padding:12px 14px;
+  }
+  #tSail tr:hover{background:linear-gradient(160deg,var(--surface-2),var(--surface))}
+  #tSail td{border:none;padding:4px 0;display:flex;justify-content:space-between;align-items:center;gap:14px}
+  #tSail td::before{content:attr(data-l);font-family:var(--mono);font-size:10.5px;color:var(--ink-3);white-space:nowrap;letter-spacing:.4px}
+  #tSail td.hd{border-bottom:1px solid var(--line);margin-bottom:7px;padding-bottom:9px}
+  #tSail td.hd::before{display:none}
+  #tSail td.hd .vsl{font-size:15.5px}
+  #tSail td.stat{display:none}
+  #tSail .m-badge{display:inline-flex}
+  #tSail td.act{justify-content:flex-start;margin-top:6px}
+}
+.m-badge{display:none}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition-duration:.01ms!important}
+  .sweep{display:none}
+}
+</style>
+</head>
+<body>
+
+<svg style="display:none" aria-hidden="true">
+  <symbol id="i-radar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12 19 7"/><circle cx="16.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/>
+  </symbol>
+  <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round">
+    <path d="M4 6h16M4 12h16M4 18h10"/>
+  </symbol>
+  <symbol id="i-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-5"/>
+  </symbol>
+  <symbol id="i-route" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="6" cy="18" r="2.4"/><circle cx="18" cy="6" r="2.4"/><path d="M8.4 18h5.1a3.5 3.5 0 0 0 0-7H10a3.5 3.5 0 0 1 0-7h5.6"/>
+  </symbol>
+  <symbol id="i-wave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round">
+    <path d="M2 9c2.5-2.6 4.5-2.6 7 0s4.5 2.6 7 0 4.5-2.6 6 0"/><path d="M2 15c2.5-2.6 4.5-2.6 7 0s4.5 2.6 7 0 4.5-2.6 6 0"/>
+  </symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 9a6 6 0 1 0-12 0c0 5-2 6-2 6h16s-2-1-2-6"/><path d="M13.7 20a2 2 0 0 1-3.4 0"/>
+  </symbol>
+  <symbol id="i-data" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>
+  </symbol>
+  <symbol id="i-more" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round">
+    <circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/>
+  </symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 4 2.6 20h18.8L12 4Z"/><path d="M12 10v4.5M12 17.4v.1"/>
+  </symbol>
+</svg>
+
+<div class="shell">
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" opacity=".35"/><circle cx="12" cy="12" r="6" opacity=".6"/>
+        <path d="M12 12 20.5 6.5"/><circle cx="17" cy="8.8" r="1.8" fill="currentColor" stroke="none"/>
+      </svg>
+      <h1>רדאר <b>יבוא ימי</b></h1>
+    </div>
+    <div class="stat">
+      <span class="hide-s" id="feedStamp">אין פיד</span>
+      <span><i class="dot"></i><span id="clock">--:--</span></span>
+    </div>
+  </div>
+</header>
+
+<div class="body-grid">
+  <nav class="rail" role="tablist" aria-label="ניווט ראשי">
+    <button role="tab" data-t="radar" aria-selected="true"><svg><use href="#i-radar"/></svg>רדאר</button>
+    <button role="tab" data-t="sail" aria-selected="false"><svg><use href="#i-list"/></svg>הפלגות</button>
+    <button role="tab" data-t="rel" aria-selected="false"><svg><use href="#i-gauge"/></svg>אמינות</button>
+    <button role="tab" data-t="svc" aria-selected="false"><svg><use href="#i-route"/></svg>קווים</button>
+    <button role="tab" data-t="cong" aria-selected="false"><svg><use href="#i-wave"/></svg>עומס</button>
+    <button role="tab" data-t="alerts" aria-selected="false"><svg><use href="#i-bell"/></svg>התראות</button>
+    <button role="tab" data-t="data" aria-selected="false"><svg><use href="#i-data"/></svg>נתונים</button>
+  </nav>
+
+  <main>
+    <div class="notice" id="demoBanner" hidden>
+      <span>נתוני דמו — החלף בנתונים אמיתיים בלשונית «נתונים»</span>
+      <button class="btn ghost sm" onclick="clearDemo()">נקה דמו</button>
+    </div>
+
+    <!-- ===== RADAR ===== -->
+    <section class="panel on" id="p-radar" role="tabpanel" aria-label="רדאר">
+      <div class="kpis" id="kpis"></div>
+      <div class="sec-head">
+        <div>
+          <h2>סקופ התקרבות</h2>
+          <div class="hint">טווח = ימים ל-ETA · סקטור = נמל פריקה · לחיצה על בליפ לפרטים</div>
+        </div>
+      </div>
+      <div class="radar-grid">
+        <div class="scope-wrap">
+          <svg class="scope" id="scope" viewBox="0 0 400 400" role="img" aria-label="סקופ סונאר של אניות מתקרבות"></svg>
+        </div>
+        <div class="scope-side">
+          <div class="scope-read" id="scopeRead">בחר בליפ כדי לראות פרטי אנייה.</div>
+          <div class="legend">
+            <span><i style="background:var(--ink-2)"></i>בזמן</span>
+            <span><i style="background:var(--amber)"></i>איחור יום</span>
+            <span><i style="background:var(--signal)"></i>איחור 2+ / חריגה</span>
+            <span><i style="background:var(--phos)"></i>עגנה</span>
+          </div>
+          <div class="card"><h3>הגעות קרובות</h3><div id="nextList"></div></div>
+        </div>
+      </div>
+
+      <div class="sec-head" style="margin-top:28px">
+        <div><h3 style="margin:0">ציר זמן — 21 יום</h3></div>
+      </div>
+      <div class="strip-box"><svg class="strip" id="strip" viewBox="0 0 1000 260" preserveAspectRatio="xMidYMin meet"></svg></div>
+    </section>
+
+    <!-- ===== SAILINGS ===== -->
+    <section class="panel" id="p-sail" role="tabpanel" aria-label="הפלגות">
+      <div class="sec-head"><h2>הפלגות ליעד ישראל</h2></div>
+      <div class="tools">
+        <input type="text" id="q" placeholder="חיפוש אנייה / ספן / שירות / נמל" aria-label="חיפוש">
+        <select id="fPod" aria-label="סינון לפי נמל יעד"><option value="">כל נמלי היעד</option></select>
+        <select id="fCarrier" aria-label="סינון לפי ספן"><option value="">כל הספנים</option></select>
+        <select id="fStatus" aria-label="סינון לפי סטטוס">
+          <option value="">כל הסטטוסים</option>
+          <option value="expected">בדרך</option>
+          <option value="berthed">עגנה</option>
+          <option value="omitted">דילוג</option>
+        </select>
+        <button class="btn ghost" onclick="exportCsv()">ייצוא CSV</button>
+      </div>
+      <div class="tbl-scroll" id="sailScroll">
+        <table id="tSail">
+          <thead><tr>
+            <th data-s="vessel">אנייה</th><th data-s="carrier">ספן</th><th data-s="service">שירות</th>
+            <th data-s="voyage">הפלגה</th><th data-s="pol">מוצא</th><th data-s="pod">יעד</th>
+            <th data-s="etaDeclared">ETA מוצהר</th><th data-s="etaCurrent">ETA נוכחי</th>
+            <th data-s="ata">בפועל</th><th data-s="_delay">סטייה</th>
+            <th class="nosort">סטטוס</th><th class="nosort"></th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div id="sailEmpty" class="empty" hidden>אין הפלגות להצגה. הוסף ידנית או ייבא בלשונית «נתונים».</div>
+
+      <fieldset>
+        <legend>הוספת הפלגה</legend>
+        <div class="frm">
+          <div><label class="f" for="n_vessel">אנייה</label><input type="text" id="n_vessel"></div>
+          <div><label class="f" for="n_carrier">ספן</label><input type="text" id="n_carrier"></div>
+          <div><label class="f" for="n_service">שירות</label><input type="text" id="n_service"></div>
+          <div><label class="f" for="n_voyage">מס' הפלגה</label><input type="text" id="n_voyage"></div>
+          <div><label class="f" for="n_pol">נמל מוצא</label><input type="text" id="n_pol"></div>
+          <div><label class="f" for="n_pod">נמל יעד</label><input type="text" id="n_pod" value="אשדוד"></div>
+          <div><label class="f" for="n_etaD">ETA מוצהר</label><input type="date" id="n_etaD"></div>
+          <div><label class="f" for="n_etaC">ETA נוכחי</label><input type="date" id="n_etaC"></div>
+          <div><label class="f" for="n_ata">הגעה בפועל</label><input type="date" id="n_ata"></div>
+        </div>
+        <button class="btn" onclick="addSailing()">הוסף הפלגה</button>
+      </fieldset>
+    </section>
+
+    <!-- ===== RELIABILITY ===== -->
+    <section class="panel" id="p-rel" role="tabpanel" aria-label="אמינות">
+      <div class="sec-head">
+        <div>
+          <h2>אמינות לוחות זמנים</h2>
+          <div class="hint">ETA מוצהר מול הגעה בפועל · «בזמן» = סטייה עד יום</div>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="card"><h3>לפי ספן</h3><div id="relCarrier"></div></div>
+        <div class="card"><h3>לפי שירות</h3><div id="relService"></div></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h3>איך מתרגמים לכסף</h3>
+        <div class="hint">
+          ספן זול עם אמינות נמוכה עולה יותר: מלאי ביטחון, אחסנה, ועיכוב אצל הלקוח.
+          המר למספר — <code class="k">ימי איחור ממוצעים × עלות יום עיכוב × TEU</code> — וקח אותו לשולחן מול ה-buy rate.
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SERVICES ===== -->
+    <section class="panel" id="p-svc" role="tabpanel" aria-label="קווי יבוא">
+      <div class="sec-head">
+        <div><h2>קווי יבוא לישראל</h2><div class="hint">מי מפעיל, מאיפה, כמה זמן, דרך איזה נמל שיתוף</div></div>
+      </div>
+      <div class="tbl-scroll">
+        <table id="tSvc">
+          <thead><tr>
+            <th class="nosort">ספן</th><th class="nosort">שירות</th><th class="nosort">קו סחר</th>
+            <th class="nosort">Transit</th><th class="nosort">תדירות</th><th class="nosort">נמל שיתוף</th>
+            <th class="nosort">יעד</th><th class="nosort"></th>
+          </tr></thead><tbody></tbody>
+        </table>
+      </div>
+      <div id="svcEmpty" class="empty" hidden>עדיין לא הוגדרו קווים.</div>
+      <fieldset>
+        <legend>הוספת קו</legend>
+        <div class="frm">
+          <div><label class="f" for="s_carrier">ספן</label><input type="text" id="s_carrier"></div>
+          <div><label class="f" for="s_service">שירות</label><input type="text" id="s_service"></div>
+          <div><label class="f" for="s_lane">קו סחר</label><input type="text" id="s_lane" placeholder="מזרח רחוק ← ישראל"></div>
+          <div><label class="f" for="s_transit">Transit (ימים)</label><input type="number" id="s_transit"></div>
+          <div><label class="f" for="s_freq">תדירות</label><input type="text" id="s_freq" placeholder="שבועי"></div>
+          <div><label class="f" for="s_hub">נמל שיתוף</label><input type="text" id="s_hub"></div>
+          <div><label class="f" for="s_pod">נמל יעד</label><input type="text" id="s_pod" value="אשדוד"></div>
+        </div>
+        <button class="btn" onclick="addService()">הוסף קו</button>
+      </fieldset>
+    </section>
+
+    <!-- ===== CONGESTION ===== -->
+    <section class="panel" id="p-cong" role="tabpanel" aria-label="עומס נמלים">
+      <div class="sec-head">
+        <div><h2>עומס בנמלי ישראל</h2><div class="hint">רישום שבועי מדוחות הנמלים · בסיס לחיזוי סיכון D&amp;D</div></div>
+      </div>
+      <div class="tbl-scroll">
+        <table id="tCong">
+          <thead><tr><th class="nosort">תאריך</th><th class="nosort">נמל</th><th class="nosort">בהמתנה</th>
+          <th class="nosort">המתנה ממוצעת</th><th class="nosort">שינוי</th><th class="nosort"></th></tr></thead><tbody></tbody>
+        </table>
+      </div>
+      <div id="congEmpty" class="empty" hidden>אין רשומות עומס.</div>
+      <fieldset>
+        <legend>רישום שבועי</legend>
+        <div class="frm">
+          <div><label class="f" for="c_date">תאריך</label><input type="date" id="c_date"></div>
+          <div><label class="f" for="c_port">נמל</label><input type="text" id="c_port" value="אשדוד"></div>
+          <div><label class="f" for="c_wait">אניות בהמתנה</label><input type="number" id="c_wait" step="0.1"></div>
+          <div><label class="f" for="c_days">המתנה ממוצעת (ימים)</label><input type="number" id="c_days" step="0.1"></div>
+        </div>
+        <button class="btn" onclick="addCong()">הוסף רשומה</button>
+      </fieldset>
+    </section>
+
+    <!-- ===== ALERTS ===== -->
+    <section class="panel" id="p-alerts" role="tabpanel" aria-label="התראות">
+      <div class="sec-head"><h2>התראות</h2></div>
+      <div class="tools">
+        <label class="f" for="thr" style="margin:0 0 0 4px">סף איחור (ימים)</label>
+        <input type="number" id="thr" min="1" value="2" style="width:84px;min-width:84px" onchange="setThreshold(this.value)">
+      </div>
+      <div id="alertList"></div>
+    </section>
+
+    <!-- ===== DATA ===== -->
+    <section class="panel" id="p-data" role="tabpanel" aria-label="נתונים">
+      <div class="sec-head"><h2>נתונים</h2></div>
+
+      <fieldset style="margin-top:0">
+        <legend>עדכון אוטומטי — פיד הסקריפט</legend>
+        <div class="hint" style="margin-bottom:12px">
+          <code class="k">il_port_collector.py</code> כותב <code class="k">radar_feed.json</code> לצד קובץ ה-HTML.
+          אם האפליקציה מוגשת דרך שרת מקומי, כפתור הרענון מושך אותו לבד.
+        </div>
+        <div class="tools" style="margin:0">
+          <button class="btn" onclick="pullFeed()">רענן מהפיד</button>
+          <label class="btn ghost" style="cursor:pointer">טען קובץ פיד
+            <input type="file" accept=".json" hidden onchange="loadFeedFile(event)">
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>ייבוא ידני</legend>
+        <div class="hint" style="margin-bottom:10px">
+          הדבק טבלה מאתר נמל או מאקסל (טאבים) או CSV. שורת כותרת נדרשת.
+          עמודות מזוהות: <code class="k">vessel</code> <code class="k">carrier</code> <code class="k">service</code>
+          <code class="k">voyage</code> <code class="k">pol</code> <code class="k">pod</code> <code class="k">eta</code>
+          <code class="k">ata</code> — וגם בעברית: אנייה, ספן, שירות, הפלגה, מוצא, יעד, מועד הגעה, הגעה בפועל.
+        </div>
+        <textarea id="paste" placeholder="vessel&#9;carrier&#9;service&#9;pol&#9;pod&#9;eta&#10;MSC EXAMPLE&#9;MSC&#9;EX1&#9;Piraeus&#9;אשדוד&#9;2026-08-27" aria-label="הדבקת טבלה"></textarea>
+        <div class="tools" style="margin:12px 0 0">
+          <button class="btn" onclick="importPaste()">ייבא הפלגות</button>
+          <button class="btn ghost" onclick="downloadTemplate()">תבנית CSV</button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>גיבוי</legend>
+        <div class="tools" style="margin:0">
+          <button class="btn ghost" onclick="exportJson()">גיבוי JSON</button>
+          <label class="btn ghost" style="cursor:pointer">שחזור JSON
+            <input type="file" accept=".json" hidden onchange="importJson(event)">
+          </label>
+          <button class="btn danger" onclick="wipeAll()">מחיקת כל הנתונים</button>
+        </div>
+      </fieldset>
+
+      <div class="card" style="margin-top:18px">
+        <h3>מקורות חינמיים</h3>
+        <ul class="src">
+          <li><b>נמל אשדוד</b> — אוניות צפויות: ETA, סוכן, קו</li>
+          <li><b>חברת נמלי ישראל</b> — טבלאות תס"ק-ים הקהילתיות</li>
+          <li><b>נמל הדרום (HCT)</b> — סטטוס אניות 48 שעות קדימה, בנמל, ושיצאו</li>
+          <li><b>נמל חיפה / נמל המפרץ</b> — שער לקוחות, תוכנית עבודה</li>
+          <li><b>ZIM</b> — לוחות זמנים לפי נמל ולפי אנייה</li>
+          <li><b>AISStream.io</b> — זרם AIS גלובלי חינמי, דורש proxy קטן</li>
+        </ul>
+        <div class="hint" style="margin-top:12px">
+          באזור המזרח התיכון יש שיבושי GPS ואניות שמכבות AIS. ETA מבוסס-AIS הוא אינדיקציה בלבד — ATA מדוח הנמל תמיד גובר.
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+</div>
+
+<nav class="tabbar" role="tablist" aria-label="ניווט">
+  <button role="tab" data-t="radar" aria-selected="true"><svg><use href="#i-radar"/></svg>רדאר</button>
+  <button role="tab" data-t="sail" aria-selected="false"><svg><use href="#i-list"/></svg>הפלגות</button>
+  <button role="tab" data-t="rel" aria-selected="false"><svg><use href="#i-gauge"/></svg>אמינות</button>
+  <button role="tab" data-t="alerts" aria-selected="false"><svg><use href="#i-bell"/></svg>התראות</button>
+  <button id="moreBtn" aria-haspopup="true" aria-expanded="false"><svg><use href="#i-more"/></svg>עוד</button>
+</nav>
+<div class="sheet-back" id="sheetBack" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet" role="dialog" aria-label="עוד מסכים" aria-modal="true">
+  <div class="grab"></div>
+  <button data-t="svc"><svg><use href="#i-route"/></svg>קווי יבוא</button>
+  <button data-t="cong"><svg><use href="#i-wave"/></svg>עומס נמלים</button>
+  <button data-t="data"><svg><use href="#i-data"/></svg>נתונים</button>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+const KEY="oir.v2", DAY=86400000;
+let db={sailings:[],services:[],congestion:[],settings:{threshold:2},demo:false};
+let sort={col:"etaCurrent",dir:1};
+const $=id=>document.getElementById(id);
+
+/* ---------------- storage ---------------- */
+function load(){
+  try{ const raw=localStorage.getItem(KEY)||localStorage.getItem("oir.v1");
+    if(raw){ db=Object.assign(db,JSON.parse(raw)); return true; } }
+  catch(e){ console.warn(e); }
+  return false;
+}
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(db)); }
+  catch(e){ toast("השמירה נכשלה — אחסון הדפדפן חסום"); } }
+function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("on");
+  clearTimeout(toast._h); toast._h=setTimeout(()=>t.classList.remove("on"),2800); }
+const uid=()=>Math.random().toString(36).slice(2,10);
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ---------------- dates ---------------- */
+function today0(){ const d=new Date(); d.setHours(0,0,0,0); return d; }
+function parseDate(v){
+  if(!v) return null; v=String(v).trim(); if(!v) return null;
+  let m=v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if(m) return new Date(+m[1],+m[2]-1,+m[3]);
+  m=v.match(/^(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4})/);
+  if(m){ let y=+m[3]; if(y<100) y+=2000; return new Date(y,+m[2]-1,+m[1]); }
+  const d=new Date(v); return isNaN(d)?null:new Date(d.getFullYear(),d.getMonth(),d.getDate());
+}
+const p2=n=>String(n).padStart(2,"0");
+function iso(d){ return d? d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate()) : ""; }
+function fmt(v){ const d=parseDate(v); return d? p2(d.getDate())+"/"+p2(d.getMonth()+1) : "—"; }
+const daysBetween=(a,b)=>Math.round((b-a)/DAY);
+
+/* ---------------- derived ---------------- */
+function delayOf(s){ const e=parseDate(s.etaDeclared),a=parseDate(s.ata);
+  return (e&&a)? daysBetween(e,a) : null; }
+function projectedDelay(s){ const e=parseDate(s.etaDeclared),c=parseDate(s.etaCurrent);
+  return (e&&c)? daysBetween(e,c) : null; }
+function statusOf(s){
+  if(s.status==="omitted") return "omitted";
+  if(s.ata) return "berthed";
+  const eta=parseDate(s.etaCurrent||s.etaDeclared);
+  if(eta && daysBetween(today0(),eta)<0) return "overdue";
+  return "expected";
+}
+function daysToEta(s){ const e=parseDate(s.etaCurrent||s.etaDeclared);
+  return e? daysBetween(today0(),e) : null; }
+function colorOf(s){
+  const st=statusOf(s), pd=projectedDelay(s);
+  if(st==="berthed") return "#31E9C4";
+  if(st==="overdue"||st==="omitted") return "#FF2E93";
+  if(pd!==null&&pd>=2) return "#FF2E93";
+  if(pd!==null&&pd>=1) return "#FFB454";
+  return "#9AAAC6";
+}
+
+/* ---------------- KPIs ---------------- */
+function renderKpis(){
+  const t0=today0();
+  const inbound=db.sailings.filter(s=>{ const d=daysToEta(s);
+    return !s.ata && s.status!=="omitted" && d!==null && d>=0 && d<=14; });
+  const arrived=db.sailings.filter(s=>delayOf(s)!==null);
+  const last30=arrived.filter(s=>{ const a=parseDate(s.ata); return a && daysBetween(a,t0)<=30; });
+  const pool=last30.length? last30 : arrived;
+  const otp=pool.length? Math.round(pool.filter(s=>Math.abs(delayOf(s))<=1).length/pool.length*100) : null;
+  const avg=pool.length? pool.reduce((a,s)=>a+delayOf(s),0)/pool.length : null;
+  const al=buildAlerts().length;
+  const cards=[
+    {v:inbound.length,l:"אניות בדרך · 14 יום"},
+    {v:otp===null?"—":otp+"%",l:"אמינות ETA · 30 יום",good:otp!==null&&otp>=80,hot:otp!==null&&otp<60},
+    {v:avg===null?"—":(avg>0?"+":"")+avg.toFixed(1),l:"סטייה ממוצעת (ימים)"},
+    {v:db.services.length,l:"קווים במעקב"},
+    {v:al,l:"התראות פתוחות",hot:al>0}
+  ];
+  $("kpis").innerHTML=cards.map(c=>
+    `<div class="kpi ${c.hot?"hot":c.good?"good":""}"><div class="v">${c.v}</div><div class="l">${c.l}</div></div>`).join("");
+}
+
+/* ---------------- signature: sonar scope ---------------- */
+let scopeSel=null;
+function renderScope(){
+  const svg=$("scope"), C=200, R=176, MAXD=21;
+  const active=db.sailings.filter(s=>{
+    const d=daysToEta(s); if(d===null) return false;
+    if(s.ata && daysBetween(parseDate(s.ata),today0())>3) return false;
+    return d<=MAXD && d>=-9;
+  });
+  let g="";
+  g+=`<defs>
+    <radialGradient id="gsea" cx="50%" cy="50%"><stop offset="0%" stop-color="#0E1A2E"/><stop offset="100%" stop-color="#05080F"/></radialGradient>
+    <radialGradient id="gsweep" cx="0" cy="0" r="1" gradientUnits="objectBoundingBox">
+      <stop offset="0%" stop-color="#31E9C4" stop-opacity=".16"/><stop offset="100%" stop-color="#31E9C4" stop-opacity="0"/></radialGradient>
+  </defs>`;
+  g+=`<circle cx="${C}" cy="${C}" r="${R+8}" fill="url(#gsea)" stroke="rgba(125,160,215,.20)"/>`;
+
+  // range rings
+  [7,14,21].forEach(d=>{
+    const r=(d/MAXD)*R;
+    g+=`<circle cx="${C}" cy="${C}" r="${r}" fill="none" stroke="rgba(125,160,215,.17)" stroke-dasharray="2 5"/>`;
+    g+=`<text x="${C-4}" y="${C-r+11}" font-size="8.5" fill="#6B7C99" text-anchor="end">${d}</text>`;
+  });
+  g+=`<circle cx="${C}" cy="${C}" r="${R*0.10}" fill="rgba(255,46,147,.07)" stroke="rgba(255,46,147,.45)"/>`;
+  g+=`<text x="${C}" y="${C+3}" font-size="8.5" text-anchor="middle" fill="#FF2E93">IL</text>`;
+  g+=`<text x="${C-4}" y="${C-R-4}" font-size="8" fill="#6B7C99" text-anchor="end">ימים ל-ETA</text>`;
+
+  const ports=[...new Set(active.map(s=>s.pod||"לא ידוע"))].sort();
+  if(!ports.length){
+    g+=`<text x="${C}" y="${C+56}" text-anchor="middle" font-size="11" fill="#6B7C99">אין אניות בטווח</text>`;
+    svg.innerHTML=g; return;
+  }
+  // sweep
+  const sw=0.42; // sweep width, radians
+  g+=`<g class="sweep"><path d="M${C} ${C} L${C+R+8} ${C} A${R+8} ${R+8} 0 0 0 ${(C+(R+8)*Math.cos(-sw)).toFixed(1)} ${(C+(R+8)*Math.sin(-sw)).toFixed(1)} Z" fill="url(#gsweep)" opacity=".9"/>
+      <line x1="${C}" y1="${C}" x2="${C+R+8}" y2="${C}" stroke="#31E9C4" stroke-width=".7" opacity=".38"/></g>`;
+
+  const step=360/ports.length;
+  ports.forEach((p,pi)=>{
+    const a0=pi*step-90, a1=a0+step, mid=(a0+a1)/2;
+    const rad=x=>x*Math.PI/180;
+    g+=`<line x1="${C}" y1="${C}" x2="${C+(R+8)*Math.cos(rad(a0))}" y2="${C+(R+8)*Math.sin(rad(a0))}" stroke="rgba(125,160,215,.13)"/>`;
+    const lx=C+(R-8)*Math.cos(rad(mid)), ly=C+(R-8)*Math.sin(rad(mid));
+    g+=`<text x="${lx}" y="${ly}" font-size="9.5" fill="#9AAAC6" text-anchor="middle" dominant-baseline="middle" stroke="#05080F" stroke-width="2.6" paint-order="stroke" stroke-linejoin="round">${esc(p)}</text>`;
+
+    const rows=active.filter(s=>(s.pod||"לא ידוע")===p);
+    rows.forEach((s,i)=>{
+      const d=daysToEta(s);
+      const r = d<0 ? R*0.145 : R*0.22 + (Math.min(d,MAXD)/MAXD)*(R*0.76);
+      // spread within the sector, keeping clear of the edges
+      const spread = rows.length>1 ? ((i%5)-2)*(step*0.13) : 0;
+      const ang=rad(mid+spread);
+      const x=C+r*Math.cos(ang), y=C+r*Math.sin(ang);
+      const col=colorOf(s);
+      const pulse = (statusOf(s)==="overdue"||statusOf(s)==="omitted");
+      g+=`<g class="blip" tabindex="0" role="button" data-id="${s.id}" aria-label="${esc(s.vessel)}">
+            <circle class="halo" cx="${x}" cy="${y}" r="10" fill="${col}" opacity=".14"/>
+            ${pulse?`<circle cx="${x}" cy="${y}" r="10" fill="none" stroke="${col}" stroke-width=".8" opacity=".5"><animate attributeName="r" values="7;15" dur="2.2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".55;0" dur="2.2s" repeatCount="indefinite"/></circle>`:""}
+            <circle class="core" cx="${x}" cy="${y}" r="4" fill="${col}"/>
+            <title>${esc(s.vessel)} · ${esc(s.carrier||"")}\n${esc(s.pol||"")} → ${esc(s.pod||"")} · ETA ${fmt(s.etaCurrent||s.etaDeclared)}</title>
+          </g>`;
+    });
+  });
+  svg.innerHTML=g;
+  svg.querySelectorAll(".blip").forEach(b=>{
+    const pick=()=>showBlip(b.dataset.id);
+    b.addEventListener("click",pick);
+    b.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(); }});
+  });
+  if(scopeSel) showBlip(scopeSel,true);
+}
+function showBlip(id,quiet){
+  const s=db.sailings.find(x=>x.id===id); if(!s) return;
+  scopeSel=id;
+  const d=daysToEta(s), pd=projectedDelay(s), ad=delayOf(s);
+  const bits=[
+    `<b>${esc(s.vessel)}</b>`,
+    s.carrier?esc(s.carrier):null,
+    s.service?esc(s.service):null,
+    s.voyage?"הפלגה "+esc(s.voyage):null,
+    `${esc(s.pol||"—")} ← ${esc(s.pod||"—")}`,
+    `ETA ${fmt(s.etaCurrent||s.etaDeclared)}${d!==null?` (${d>=0?"בעוד "+d+" ימים":"חריגה "+(-d)+" ימים"})`:""}`,
+    s.ata?`עגנה ${fmt(s.ata)}`:null,
+    (ad??pd)!==null?`סטייה ${((ad??pd)>0?"+":"")+(ad??pd)}`:null
+  ].filter(Boolean);
+  $("scopeRead").innerHTML=bits.join(" · ");
+  if(!quiet) $("scopeRead").scrollIntoView({block:"nearest",behavior:"smooth"});
+}
+
+function renderNext(){
+  const el=$("nextList"); if(!el) return;
+  const rows=db.sailings.filter(s=>{ const d=daysToEta(s);
+      return !s.ata && s.status!=="omitted" && d!==null && d>=-6 && d<=21; })
+    .sort((a,b)=>daysToEta(a)-daysToEta(b)).slice(0,7);
+  if(!rows.length){ el.innerHTML=`<div class="hint">אין הגעות בטווח.</div>`; return; }
+  el.innerHTML=rows.map(s=>{
+    const d=daysToEta(s), col=colorOf(s);
+    const when = d<0 ? `חריגה ${-d}ד` : d===0 ? "היום" : `בעוד ${d}ד`;
+    return `<div class="next-row"><div>
+        <div class="n1">${esc(s.vessel)}</div>
+        <div class="n2">${esc(s.carrier||"—")} · ${esc(s.pod||"—")}</div>
+      </div>
+      <div class="eta" style="color:${col}">${when}<br><span style="color:var(--ink-3)">${fmt(s.etaCurrent||s.etaDeclared)}</span></div>
+    </div>`;
+  }).join("");
+}
+
+/* ---------------- linear strip ---------------- */
+function renderStrip(){
+  const svg=$("strip"), narrow=window.innerWidth<760, F=narrow?2.2:1;
+  const W=1000,padR=narrow?140:96,padL=narrow?14:24,x0=W-padR,x1=padL;
+  const MIN=narrow?-2:-4,MAX=narrow?10:17;
+  const scale=d=>x0-((d-MIN)/(MAX-MIN))*(x0-x1);
+  const active=db.sailings.filter(s=>{
+    const d=daysToEta(s); if(d===null) return false;
+    if(s.ata && daysBetween(parseDate(s.ata),today0())>3) return false;
+    return d>=MIN&&d<=MAX;
+  });
+  const ports=[...new Set(active.map(s=>s.pod||"לא ידוע"))].sort();
+  if(!ports.length){
+    svg.setAttribute("viewBox","0 0 1000 100");
+    svg.innerHTML=`<text x="500" y="56" text-anchor="middle" font-size="${13*F}" fill="#6B7C99">אין אניות בטווח</text>`;
+    return;
+  }
+  const rowH=44*F, top=34*F, H=top+ports.length*rowH+22*F;
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  let g="";
+  for(let d=MIN;d<=MAX;d++){
+    const x=scale(d), major=d%7===0;
+    g+=`<line x1="${x}" y1="${top-12*F}" x2="${x}" y2="${H-18*F}" stroke="rgba(125,160,215,${major?.22:.10})" stroke-width="${F}"/>`;
+    if(d%2===0) g+=`<text x="${x}" y="${top-18*F}" text-anchor="middle" font-size="${9*F}" fill="#6B7C99">${d>0?"+"+d:d}</text>`;
+  }
+  const xn=scale(0);
+  g+=`<line x1="${xn}" y1="${top-24*F}" x2="${xn}" y2="${H-12*F}" stroke="#FF2E93" stroke-width="${1.4*F}" stroke-dasharray="${5*F} ${4*F}" opacity=".8"/>`;
+  g+=`<text x="${xn}" y="${H-2*F}" text-anchor="middle" font-size="${9*F}" fill="#FF2E93">היום</text>`;
+  ports.forEach((p,i)=>{
+    const y=top+i*rowH+rowH/2;
+    g+=`<line x1="${padL}" y1="${y+rowH/2-2}" x2="${x0}" y2="${y+rowH/2-2}" stroke="rgba(125,160,215,.10)"/>`;
+    g+=`<text x="${W-10}" y="${y+4*F}" text-anchor="end" font-size="${11.5*F}" fill="#9AAAC6">${esc(p)}</text>`;
+    const rows=active.filter(s=>(s.pod||"לא ידוע")===p), used={};
+    rows.forEach(s=>{
+      const x=scale(daysToEta(s)), b=Math.round(x/(14*F));
+      used[b]=used[b]||0; const lane=used[b]++;
+      const yy=y+(lane%2===0?0:(lane<=1?-12*F:12*F))-(lane>3?24*F:0);
+      const col=colorOf(s);
+      g+=`<g><circle cx="${x}" cy="${yy}" r="${3.4*F}" fill="${col}"/>`
+        +`<circle cx="${x}" cy="${yy}" r="${7*F}" fill="${col}" opacity=".15"/>`
+        +`<title>${esc(s.vessel)} · ETA ${fmt(s.etaCurrent||s.etaDeclared)}</title>`
+        +`<text x="${x}" y="${yy-9*F}" text-anchor="middle" font-size="${7.6*F}" fill="#6B7C99">${esc((s.vessel||"").slice(0,narrow?10:15))}</text></g>`;
+    });
+  });
+  svg.innerHTML=g;
+}
+
+/* ---------------- sailings table ---------------- */
+function renderSail(){
+  const q=$("q").value.trim().toLowerCase(),fPod=$("fPod").value,fCar=$("fCarrier").value,fSt=$("fStatus").value;
+  let rows=db.sailings.filter(s=>{
+    if(fPod&&s.pod!==fPod) return false;
+    if(fCar&&s.carrier!==fCar) return false;
+    if(fSt){ const st=statusOf(s);
+      if(fSt==="expected"&&!(st==="expected"||st==="overdue")) return false;
+      if(fSt!=="expected"&&st!==fSt) return false; }
+    if(q && ![s.vessel,s.carrier,s.service,s.pol,s.pod,s.voyage].join(" ").toLowerCase().includes(q)) return false;
+    return true;
+  });
+  rows.sort((a,b)=>{
+    let x,y;
+    if(sort.col==="_delay"){ x=projectedDelay(a)??delayOf(a)??-999; y=projectedDelay(b)??delayOf(b)??-999; }
+    else if(/^eta|^ata/.test(sort.col)){ x=parseDate(a[sort.col])?.getTime()??0; y=parseDate(b[sort.col])?.getTime()??0; }
+    else return sort.dir*String(a[sort.col]||"").localeCompare(String(b[sort.col]||""),"he");
+    return sort.dir*(x-y);
+  });
+  const badges={expected:'<span class="tag t-sail">בדרך</span>',overdue:'<span class="tag t-late">חריגה</span>',
+    berthed:'<span class="tag t-ok">עגנה</span>',departed:'<span class="tag t-sail">יצאה</span>',
+    omitted:'<span class="tag t-om">דילוג</span>'};
+  document.querySelector("#tSail tbody").innerHTML=rows.map(s=>{
+    const st=statusOf(s), dv=delayOf(s)??projectedDelay(s);
+    const dTxt=dv===null?"—":(dv>0?"+":"")+dv;
+    const dCol=dv===null?"":(dv>=2?"color:var(--signal)":dv>=1?"color:var(--amber)":"color:var(--phos)");
+    const b=badges[st]||"";
+    return `<tr>
+      <td class="hd"><span class="vsl">${esc(s.vessel)}</span><span class="m-badge">${b}</span></td>
+      <td data-l="ספן">${esc(s.carrier)}</td>
+      <td class="mono" data-l="שירות">${esc(s.service)}</td>
+      <td class="mono" data-l="הפלגה">${esc(s.voyage)}</td>
+      <td data-l="מוצא">${esc(s.pol)}</td>
+      <td data-l="יעד">${esc(s.pod)}</td>
+      <td class="num" data-l="ETA מוצהר">${fmt(s.etaDeclared)}</td>
+      <td class="num" data-l="ETA נוכחי">${fmt(s.etaCurrent||s.etaDeclared)}</td>
+      <td class="num" data-l="בפועל">${fmt(s.ata)}</td>
+      <td class="num" data-l="סטייה" style="${dCol}">${dTxt}</td>
+      <td class="stat">${b}</td>
+      <td class="act"><button class="btn ghost sm" onclick="delSailing('${s.id}')" aria-label="מחק ${esc(s.vessel)}">מחק</button></td>
+    </tr>`;
+  }).join("");
+  $("sailEmpty").hidden=rows.length>0;
+  $("sailScroll").style.display=rows.length?"":"none";
+}
+function refreshFilters(){
+  fill("fPod",[...new Set(db.sailings.map(s=>s.pod).filter(Boolean))].sort(),"כל נמלי היעד");
+  fill("fCarrier",[...new Set(db.sailings.map(s=>s.carrier).filter(Boolean))].sort(),"כל הספנים");
+}
+function fill(id,arr,first){
+  const el=$(id),cur=el.value;
+  el.innerHTML=`<option value="">${first}</option>`+arr.map(v=>`<option>${esc(v)}</option>`).join("");
+  if(arr.includes(cur)) el.value=cur;
+}
+
+/* ---------------- reliability ---------------- */
+function group(by){
+  const out={};
+  db.sailings.forEach(s=>{ const d=delayOf(s); if(d===null) return;
+    const k=(s[by]||"").trim()||"לא מסווג";
+    out[k]=out[k]||{n:0,onTime:0,sum:0};
+    out[k].n++; out[k].sum+=d; if(Math.abs(d)<=1) out[k].onTime++; });
+  return out;
+}
+function bars(groups){
+  const keys=Object.keys(groups).sort((a,b)=>groups[b].n-groups[a].n);
+  if(!keys.length) return `<div class="empty">אין עדיין הגעות בפועל. הזן «הגעה בפועל» להפלגות שנפרקו.</div>`;
+  return keys.map(k=>{
+    const g=groups[k], pct=Math.round(g.onTime/g.n*100), avg=g.sum/g.n;
+    const cls=pct>=80?"hi":pct>=60?"mid":"low";
+    return `<div class="bar-row"><div class="nm">${esc(k)}</div>
+      <div class="bar-track"><div class="bar-fill ${cls}" style="width:${pct}%"></div></div>
+      <div class="mt">${pct}% · ${(avg>0?"+":"")+avg.toFixed(1)}ד · n=${g.n}</div></div>`;
+  }).join("");
+}
+function renderRel(){ $("relCarrier").innerHTML=bars(group("carrier")); $("relService").innerHTML=bars(group("service")); }
+
+/* ---------------- services / congestion ---------------- */
+function renderSvc(){
+  document.querySelector("#tSvc tbody").innerHTML=db.services.map(s=>`<tr>
+    <td class="vsl">${esc(s.carrier)}</td><td class="mono">${esc(s.service)}</td><td>${esc(s.lane)}</td>
+    <td class="num">${esc(s.transit)}</td><td>${esc(s.freq)}</td><td>${esc(s.hub)}</td><td>${esc(s.pod)}</td>
+    <td><button class="btn ghost sm" onclick="delService('${s.id}')">מחק</button></td></tr>`).join("");
+  $("svcEmpty").hidden=db.services.length>0;
+  document.querySelector("#tSvc").parentElement.style.display=db.services.length?"":"none";
+}
+function renderCong(){
+  const rows=db.congestion.slice().sort((a,b)=>(parseDate(b.date)?.getTime()||0)-(parseDate(a.date)?.getTime()||0));
+  document.querySelector("#tCong tbody").innerHTML=rows.map((c,i)=>{
+    const prev=rows.slice(i+1).find(p=>p.port===c.port);
+    let ch="—",col="";
+    if(prev&&prev.wait!=null&&c.wait!=null){
+      const d=c.wait-prev.wait;
+      ch=(d>0?"▲ +":d<0?"▼ ":"= ")+d.toFixed(1);
+      col=d>0?"color:var(--signal)":d<0?"color:var(--phos)":"";
+    }
+    return `<tr><td class="num">${fmt(c.date)}</td><td>${esc(c.port)}</td>
+      <td class="num">${c.wait??"—"}</td><td class="num">${c.days??"—"}</td>
+      <td class="num" style="${col}">${ch}</td>
+      <td><button class="btn ghost sm" onclick="delCong('${c.id}')">מחק</button></td></tr>`;
+  }).join("");
+  $("congEmpty").hidden=rows.length>0;
+  document.querySelector("#tCong").parentElement.style.display=rows.length?"":"none";
+}
+
+/* ---------------- alerts ---------------- */
+function buildAlerts(){
+  const thr=db.settings.threshold||2, out=[];
+  db.sailings.forEach(s=>{
+    const st=statusOf(s);
+    if(st==="omitted"){ out.push({t:`${s.vessel} דילגה על ${s.pod||"הנמל"}`,
+      d:`${s.carrier||""} · ${s.service||""} · הפלגה ${s.voyage||"—"} — בדוק מטענים שנשארו`}); return; }
+    const pd=projectedDelay(s);
+    if(pd!==null&&pd>=thr&&!s.ata) out.push({t:`${s.vessel} — ETA הוזז ב-${pd} ימים`,
+      d:`${fmt(s.etaDeclared)} → ${fmt(s.etaCurrent)} · ${s.carrier||""} → ${s.pod||""}`});
+    if(st==="overdue"){ const late=-daysToEta(s);
+      if(late>=1) out.push({t:`${s.vessel} חרגה מ-ETA ב-${late} ימים`,d:`אין דיווח הגעה · ${s.carrier||""} · ${s.pod||""}`}); }
+    const ad=delayOf(s);
+    if(ad!==null&&ad>=thr+2) out.push({t:`${s.vessel} הגיעה באיחור ${ad} ימים`,
+      d:`משפיע על אמינות ${s.carrier||""} · בדוק חשיפת D&D`});
+  });
+  const byPort={};
+  db.congestion.forEach(c=>{ (byPort[c.port]=byPort[c.port]||[]).push(c); });
+  Object.entries(byPort).forEach(([p,arr])=>{
+    arr.sort((a,b)=>(parseDate(b.date)?.getTime()||0)-(parseDate(a.date)?.getTime()||0));
+    if(arr.length>=2&&arr[0].wait!=null&&arr[1].wait!=null&&arr[0].wait-arr[1].wait>=5)
+      out.push({t:`עלייה בתור ב${p}`,d:`${arr[1].wait} → ${arr[0].wait} אניות בהמתנה · שקול נמל חלופי`});
+  });
+  return out;
+}
+function renderAlerts(){
+  const a=buildAlerts();
+  $("thr").value=db.settings.threshold||2;
+  $("alertList").innerHTML=a.length
+    ? a.map(x=>`<div class="alert"><svg><use href="#i-warn"/></svg><div><div class="a-t">${esc(x.t)}</div><div class="a-d">${esc(x.d)}</div></div></div>`).join("")
+    : `<div class="empty">אין התראות פתוחות.</div>`;
+}
+function setThreshold(v){ db.settings.threshold=Math.max(1,+v||2); save(); renderAll(); }
+
+/* ---------------- mutations ---------------- */
+const val=id=>$(id).value.trim();
+function addSailing(){
+  const v=val("n_vessel"); if(!v){ toast("נדרש שם אנייה"); $("n_vessel").focus(); return; }
+  db.sailings.push({id:uid(),vessel:v,carrier:val("n_carrier"),service:val("n_service"),voyage:val("n_voyage"),
+    pol:val("n_pol"),pod:val("n_pod"),etaDeclared:val("n_etaD"),etaCurrent:val("n_etaC")||val("n_etaD"),
+    ata:val("n_ata"),status:""});
+  ["n_vessel","n_voyage","n_etaD","n_etaC","n_ata"].forEach(i=>$(i).value="");
+  db.demo=false; save(); renderAll(); toast("ההפלגה נוספה");
+}
+function delSailing(id){ db.sailings=db.sailings.filter(s=>s.id!==id); save(); renderAll(); }
+function addService(){
+  const c=val("s_carrier"); if(!c){ toast("נדרש שם ספן"); $("s_carrier").focus(); return; }
+  db.services.push({id:uid(),carrier:c,service:val("s_service"),lane:val("s_lane"),
+    transit:val("s_transit"),freq:val("s_freq"),hub:val("s_hub"),pod:val("s_pod")});
+  ["s_carrier","s_service","s_lane","s_transit","s_hub"].forEach(i=>$(i).value="");
+  save(); renderAll(); toast("הקו נוסף");
+}
+function delService(id){ db.services=db.services.filter(s=>s.id!==id); save(); renderAll(); }
+function addCong(){
+  const d=val("c_date"); if(!d){ toast("נדרש תאריך"); return; }
+  db.congestion.push({id:uid(),date:d,port:val("c_port"),
+    wait:val("c_wait")===""?null:+val("c_wait"),days:val("c_days")===""?null:+val("c_days")});
+  save(); renderAll(); toast("הרשומה נוספה");
+}
+function delCong(id){ db.congestion=db.congestion.filter(c=>c.id!==id); save(); renderAll(); }
+
+/* ---------------- feed ---------------- */
+function mergeFeed(feed){
+  const rows=Array.isArray(feed)?feed:(feed.sailings||[]);
+  if(!rows.length){ toast("הפיד ריק"); return; }
+  let added=0,updated=0;
+  rows.forEach(r=>{
+    const vessel=(r.vessel||"").trim(); if(!vessel) return;
+    const voyage=(r.voyage||"").trim();
+    const nd=f=>{ const d=parseDate(r[f]); return d?iso(d):""; };
+    const etaIn=nd("eta")||nd("etaDeclared"), etaCur=nd("eta_current")||nd("etaCurrent"), ataIn=nd("ata");
+    const ex=db.sailings.find(s=>s.vessel===vessel&&(s.voyage||"")===voyage);
+    if(ex){
+      if(!ex.etaDeclared&&etaIn) ex.etaDeclared=etaIn;
+      if(etaCur) ex.etaCurrent=etaCur; else if(etaIn) ex.etaCurrent=etaIn;
+      if(ataIn) ex.ata=ataIn;
+      ["carrier","service","pol","pod"].forEach(f=>{ if(r[f]) ex[f]=r[f]; });
+      if(r.status) ex.status=r.status;
+      updated++;
+    }else{
+      db.sailings.push({id:uid(),vessel,carrier:r.carrier||"",service:r.service||"",voyage,
+        pol:r.pol||"",pod:r.pod||"",etaDeclared:etaIn,etaCurrent:etaCur||etaIn,ata:ataIn,status:r.status||""});
+      added++;
+    }
+  });
+  if(Array.isArray(feed.congestion)) feed.congestion.forEach(c=>{
+    const d=parseDate(c.date); if(!d) return; const k=iso(d);
+    if(db.congestion.some(x=>x.date===k&&x.port===c.port)) return;
+    db.congestion.push({id:uid(),date:k,port:c.port||"",wait:c.wait??null,days:c.days??null});
+  });
+  db.demo=false;
+  db.settings.lastFeed=feed.generated_at||new Date().toISOString();
+  save(); renderAll(); toast(`מהפיד: ${added} חדשות · ${updated} עודכנו`);
+}
+function stampFeed(){
+  $("feedStamp").textContent=db.settings.lastFeed
+    ? "פיד "+String(db.settings.lastFeed).replace("T"," ").slice(5,16) : "אין פיד";
+}
+async function pullFeed(){
+  try{
+    const res=await fetch("radar_feed.json?ts="+Date.now(),{cache:"no-store"});
+    if(!res.ok) throw new Error(res.status);
+    mergeFeed(await res.json());
+  }catch(e){ toast("לא נמצא radar_feed.json. הרץ את הסקריפט או טען את הקובץ ידנית."); }
+}
+function loadFeedFile(ev){
+  const f=ev.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ mergeFeed(JSON.parse(r.result)); }catch(e){ toast("הקובץ אינו JSON תקין"); } };
+  r.readAsText(f); ev.target.value="";
+}
+
+/* ---------------- import / export ---------------- */
+const HEAD_MAP={
+  vessel:"vessel",ship:"vessel","אנייה":"vessel","אניה":"vessel","אוניה":"vessel","אונייה":"vessel","שם אנייה":"vessel","שם האנייה":"vessel","כלי שיט":"vessel",
+  carrier:"carrier",line:"carrier","ספן":"carrier","חברת ספנות":"carrier","קו ספנות":"carrier","סוכן":"carrier","סוכן אניות":"carrier",
+  service:"service","שירות":"service","קו":"service",
+  voyage:"voyage",voy:"voyage","הפלגה":"voyage","מספר הפלגה":"voyage","מס' הפלגה":"voyage",
+  pol:"pol",origin:"pol","מוצא":"pol","נמל מוצא":"pol","מנמל":"pol","נמל קודם":"pol",
+  pod:"pod",destination:"pod","יעד":"pod","נמל יעד":"pod","לנמל":"pod","נמל":"pod",
+  eta:"etaDeclared","מועד הגעה":"etaDeclared","הגעה צפויה":"etaDeclared","eta מוצהר":"etaDeclared",
+  eta_current:"etaCurrent","eta נוכחי":"etaCurrent","eta מעודכן":"etaCurrent",
+  ata:"ata","הגעה בפועל":"ata","עגינה":"ata",atb:"ata"
+};
+function splitLine(line){
+  if(line.includes("\t")) return line.split("\t");
+  const out=[]; let cur="",q=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='"'){ if(q&&line[i+1]==='"'){cur+='"';i++;} else q=!q; }
+    else if(ch===","&&!q){ out.push(cur); cur=""; }
+    else cur+=ch;
+  }
+  out.push(cur); return out;
+}
+function importPaste(){
+  const txt=$("paste").value.trim();
+  if(!txt){ toast("הדבק טבלה קודם"); return; }
+  const lines=txt.split(/\r?\n/).filter(l=>l.trim());
+  if(lines.length<2){ toast("נדרשת שורת כותרת ולפחות שורה אחת"); return; }
+  const heads=splitLine(lines[0]).map(h=>h.trim().toLowerCase().replace(/^"|"$/g,""));
+  const cols=heads.map(h=>HEAD_MAP[h]||null);
+  if(!cols.includes("vessel")){ toast("לא נמצאה עמודת אנייה — בדוק את שורת הכותרת"); return; }
+  let n=0;
+  for(let i=1;i<lines.length;i++){
+    const cells=splitLine(lines[i]).map(c=>c.trim().replace(/^"|"$/g,""));
+    const rec={id:uid(),vessel:"",carrier:"",service:"",voyage:"",pol:"",pod:"",etaDeclared:"",etaCurrent:"",ata:"",status:""};
+    cols.forEach((c,j)=>{ if(c&&cells[j]!==undefined) rec[c]=cells[j]; });
+    if(!rec.vessel) continue;
+    ["etaDeclared","etaCurrent","ata"].forEach(f=>{ const d=parseDate(rec[f]); rec[f]=d?iso(d):""; });
+    if(!rec.etaCurrent) rec.etaCurrent=rec.etaDeclared;
+    const ex=db.sailings.find(s=>s.vessel===rec.vessel&&(s.voyage||"")===(rec.voyage||""));
+    if(ex){
+      if(!ex.etaDeclared) ex.etaDeclared=rec.etaDeclared;
+      else if(rec.etaCurrent&&rec.etaCurrent!==ex.etaDeclared) ex.etaCurrent=rec.etaCurrent;
+      if(rec.ata) ex.ata=rec.ata;
+      ["carrier","service","pol","pod"].forEach(f=>{ if(rec[f]) ex[f]=rec[f]; });
+    } else db.sailings.push(rec);
+    n++;
+  }
+  db.demo=false; save(); renderAll(); $("paste").value="";
+  toast(n+" שורות יובאו");
+}
+function downloadTemplate(){
+  dl("sailings-template.csv","text/csv;charset=utf-8","\ufeff"+
+    "vessel,carrier,service,voyage,pol,pod,eta,eta_current,ata\nMSC EXAMPLE,MSC,EX1,224W,Piraeus,אשדוד,2026-08-27,2026-08-28,\n");
+}
+function exportCsv(){
+  const head="vessel,carrier,service,voyage,pol,pod,eta,eta_current,ata,delay_days\n";
+  const body=db.sailings.map(s=>{
+    const d=delayOf(s)??projectedDelay(s);
+    return [s.vessel,s.carrier,s.service,s.voyage,s.pol,s.pod,s.etaDeclared,s.etaCurrent,s.ata,d??""]
+      .map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(",");
+  }).join("\n");
+  dl("sailings.csv","text/csv;charset=utf-8","\ufeff"+head+body);
+}
+function exportJson(){ dl("ocean-import-radar-backup.json","application/json",JSON.stringify(db,null,2)); }
+function importJson(ev){
+  const f=ev.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{
+      const o=JSON.parse(r.result); if(!o.sailings) throw new Error("bad");
+      db=Object.assign({sailings:[],services:[],congestion:[],settings:{threshold:2},demo:false},o);
+      save(); renderAll(); toast("הגיבוי שוחזר");
+    }catch(e){ toast("הקובץ אינו גיבוי תקין של האפליקציה"); } };
+  r.readAsText(f); ev.target.value="";
+}
+function dl(name,type,content){
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([content],{type})); a.download=name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+}
+function wipeAll(){
+  if(!confirm("למחוק את כל הנתונים? הפעולה אינה הפיכה.")) return;
+  db={sailings:[],services:[],congestion:[],settings:{threshold:2},demo:false};
+  scopeSel=null; save(); renderAll(); toast("הנתונים נמחקו");
+}
+function clearDemo(){
+  db={sailings:[],services:[],congestion:[],settings:db.settings,demo:false};
+  scopeSel=null; save(); renderAll(); toast("נתוני הדמו נוקו");
+}
+
+/* ---------------- demo ---------------- */
+function seedDemo(){
+  const t=today0(), d=n=>iso(new Date(t.getTime()+n*DAY));
+  const S=(v,c,sv,vo,pol,pod,eD,eC,ata,st)=>({id:uid(),vessel:v,carrier:c,service:sv,voyage:vo,
+    pol,pod,etaDeclared:eD,etaCurrent:eC??eD,ata:ata||"",status:st||""});
+  db.sailings=[
+    S("דמו — נורת' סטאר","MSC","EX-MED","231W","Piraeus","אשדוד",d(2),d(2)),
+    S("דמו — כרמל ווייב","ZIM","ZMP","118E","Ningbo","חיפה",d(5),d(7)),
+    S("דמו — לבנט ראנר","CMA CGM","BEX","44W","Malta","אשדוד",d(9),d(9)),
+    S("דמו — אגאן טרייל","Maersk","MECL","318W","Port Said","נמל הדרום",d(1),d(3)),
+    S("דמו — סילק פאת'","COSCO","AEM","76E","Shanghai","נמל המפרץ",d(13),d(13)),
+    S("דמו — אדריאטיק סאן","Hapag-Lloyd","MPS","209W","Gioia Tauro","אשדוד",d(-1),d(-1)),
+    S("דמו — בוספורוס ליין","ONE","EMX","91W","Ambarli","חיפה",d(6),d(6)),
+    S("דמו — ריינבו ביי","Evergreen","AEF","55E","Kaohsiung","אשדוד",d(16),d(16)),
+    S("דמו — סאות' ווינד","MSC","EX-MED","230W","Piraeus","אשדוד",d(-9),d(-9),d(-9)),
+    S("דמו — נגב ספיריט","ZIM","ZMP","117E","Ningbo","חיפה",d(-12),d(-9),d(-9)),
+    S("דמו — מדיטרן סטאר","CMA CGM","BEX","43W","Malta","אשדוד",d(-14),d(-14),d(-13)),
+    S("דמו — יפו הרבור","Maersk","MECL","317W","Port Said","נמל הדרום",d(-16),d(-13),d(-12)),
+    S("דמו — אשקלון פרייד","MSC","EX-MED","229W","Piraeus","אשדוד",d(-21),d(-21),d(-20)),
+    S("דמו — כנרת ווייב","Hapag-Lloyd","MPS","208W","Gioia Tauro","אשדוד",d(-18),d(-18),d(-18)),
+    S("דמו — לוד אקספרס","ONE","EMX","90W","Ambarli","חיפה",d(-11),d(-11),d(-14)),
+    S("דמו — שרון ריבר","ZIM","ZXP","64E","Busan","חיפה",d(4),d(4),"","omitted")
+  ];
+  db.services=[
+    {id:uid(),carrier:"ZIM",service:"ZMP",lane:"מזרח רחוק ← ישראל",transit:"32",freq:"שבועי",hub:"ישיר",pod:"חיפה"},
+    {id:uid(),carrier:"MSC",service:"EX-MED",lane:"מערב הים התיכון ← ישראל",transit:"7",freq:"שבועי",hub:"Piraeus",pod:"אשדוד"},
+    {id:uid(),carrier:"CMA CGM",service:"BEX",lane:"צפון אירופה ← ישראל",transit:"14",freq:"שבועי",hub:"Malta",pod:"אשדוד"},
+    {id:uid(),carrier:"Maersk",service:"MECL",lane:"אגן המזרח התיכון",transit:"5",freq:"שבועי",hub:"Port Said",pod:"נמל הדרום"},
+    {id:uid(),carrier:"COSCO",service:"AEM",lane:"מזרח רחוק ← ישראל",transit:"34",freq:"שבועי",hub:"Piraeus",pod:"נמל המפרץ"}
+  ];
+  db.congestion=[
+    {id:uid(),date:d(-21),port:"אשדוד",wait:9,days:2.1},
+    {id:uid(),date:d(-14),port:"אשדוד",wait:12,days:2.8},
+    {id:uid(),date:d(-7),port:"אשדוד",wait:11,days:2.5},
+    {id:uid(),date:d(-21),port:"חיפה",wait:6,days:1.4},
+    {id:uid(),date:d(-14),port:"חיפה",wait:7,days:1.6},
+    {id:uid(),date:d(-7),port:"חיפה",wait:5,days:1.2}
+  ];
+  db.demo=true; save();
+}
+
+/* ---------------- nav ---------------- */
+function goTab(t){
+  document.querySelectorAll('[role="tab"]').forEach(b=>b.setAttribute("aria-selected",String(b.dataset.t===t)));
+  document.querySelectorAll("section.panel").forEach(p=>p.classList.toggle("on",p.id==="p-"+t));
+  if(t==="radar"){ renderScope(); renderStrip(); }
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll('nav.rail button,nav.tabbar button[role="tab"]').forEach(b=>
+  b.addEventListener("click",()=>goTab(b.dataset.t)));
+function openSheet(){ $("sheet").classList.add("on"); $("sheetBack").classList.add("on"); $("moreBtn").setAttribute("aria-expanded","true"); }
+function closeSheet(){ $("sheet").classList.remove("on"); $("sheetBack").classList.remove("on"); $("moreBtn").setAttribute("aria-expanded","false"); }
+$("moreBtn").addEventListener("click",openSheet);
+document.querySelectorAll("#sheet button").forEach(b=>b.addEventListener("click",()=>{ closeSheet(); goTab(b.dataset.t); }));
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeSheet(); });
+
+document.querySelectorAll("#tSail th[data-s]").forEach(th=>{
+  th.addEventListener("click",()=>{
+    const c=th.dataset.s;
+    sort.dir=(sort.col===c)?-sort.dir:1; sort.col=c;
+    document.querySelectorAll("#tSail th").forEach(x=>x.removeAttribute("aria-sort"));
+    th.setAttribute("aria-sort",sort.dir===1?"ascending":"descending");
+    renderSail();
+  });
+});
+["q","fPod","fCarrier","fStatus"].forEach(id=>{
+  $(id).addEventListener("input",renderSail); $(id).addEventListener("change",renderSail);
+});
+
+/* ---------------- boot ---------------- */
+function renderAll(){
+  $("demoBanner").hidden=!db.demo;
+  refreshFilters(); renderKpis(); renderScope(); renderNext(); renderStrip();
+  renderSail(); renderRel(); renderSvc(); renderCong(); renderAlerts(); stampFeed();
+}
+function tick(){ const d=new Date(); $("clock").textContent=p2(d.getHours())+":"+p2(d.getMinutes()); }
+$("c_date").value=iso(today0());
+if(!load()) seedDemo();
+renderAll(); tick(); setInterval(tick,30000);
+window.addEventListener("resize",()=>{ clearTimeout(window._rz); window._rz=setTimeout(()=>{ renderScope(); renderStrip(); },200); });
+</script>
+</body>
+</html>
